@@ -5,7 +5,6 @@ import { Container, Nav, NavItem, NavLink,} from "reactstrap";
 
 class AppFooter extends React.Component {
   render() {
-    var url = "https://github.com/Banq-Development";
     return (
       <footer>
         <Container fluid>
@@ -13,7 +12,7 @@ class AppFooter extends React.Component {
             <NavItem>
               <NavLink
                 className="text-light text-right"
-                href={url}
+                href="https://github.com/Banq-Development/hodler-contracts"
                 target="_blank"
               >
                 Github
@@ -22,7 +21,7 @@ class AppFooter extends React.Component {
             <NavItem>
               <NavLink
                 className="text-light text-right"
-                href={""}
+                href="https://docs.hodler.financial"
                 target="_blank"
               >
                 Docs
