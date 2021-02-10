@@ -75,6 +75,7 @@ class App extends React.Component {
       totalWithdrawn: "",
       currentTimestamp: "",
       startTimestamp: "",
+      txhash: "",
     }
   }
   componentDidMount() {
@@ -197,7 +198,10 @@ class App extends React.Component {
   async convert () {
     let weth = await new web3.eth.Contract(WETH.abi, this.state.asset)
     let amount = this.state.amount_eth.toLocaleString('fullwide', {useGrouping:false})
-    await weth.methods.deposit().send({from: this.state.account, value: amount})
+    await weth.methods.deposit().send({from: this.state.account, value: amount}, function(error, hash){
+      this.setState({txhash: hash})
+    }.bind(this))
+    this.setState({txhash: ""})
     this.setState({modal: !this.state.modal})
     this.gethETHdata()
   }
@@ -290,15 +294,24 @@ class App extends React.Component {
       let exp = new BN(256)
       let sub = new BN(1)
       let max = base.pow(exp).sub(sub)
-      await asset.methods.approve(hodler_address, max.toString()).send({from: this.state.account})
+      await asset.methods.approve(hodler_address, max.toString()).send({from: this.state.account}, function(error, hash){
+        this.setState({txhash: hash})
+      }.bind(this))
+      this.setState({txhash: ""})
       console.log("approve")
     } else if (input === "Deposit") {
       let asst = new BN(this.state.amountAssets.toString())
-      await hodler.methods.deposit(asst).send({from: this.state.account})
+      await hodler.methods.deposit(asst).send({from: this.state.account}, function(error, hash){
+        this.setState({txhash: hash})
+      }.bind(this))
+      this.setState({txhash: ""})
       console.log("deposit")
     } else if (input === "Withdraw") {
       let tkn = new BN(this.state.amountTokens.toString())
-      await hodler.methods.withdraw(tkn).send({from: this.state.account})
+      await hodler.methods.withdraw(tkn).send({from: this.state.account}, function(error, hash){
+        this.setState({txhash: hash})
+      }.bind(this))
+      this.setState({txhash: ""})
       console.log("withdraw")
     }
     this.gethETHdata()
@@ -497,6 +510,7 @@ class App extends React.Component {
           token_symbol={this.state.token_symbol}
           asset_balance={this.state.asset_balance / (10**this.state.precision)}
           token_balance ={this.state.token_balance / (10**this.state.precision)}
+          texthash={this.state.txhash}
           sendmax={this.sendmax}
           eth_balance={this.state.eth_balance}
         />
