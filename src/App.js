@@ -30,7 +30,6 @@ const WETH = require("./web3/WETH.json");
 const HodlerFactory = require("./web3/HodlerFactory.json");
 const Hodler = require("./web3/Hodler.json");
 const IERC20 = require("./web3/IERC20.json");
-let addressHodlerFactory;
 class App extends React.Component {
   constructor(props) {    
     super(props)
@@ -41,8 +40,10 @@ class App extends React.Component {
     this.state = {
       web3Available: false,
       networkID: 1,
+      addressHodlerFactory: "",
       hodler: "",
-      asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64",
+      weth: "",
+      asset: "",
       assetLabel: "",
       asset_enabled: "",
       account: "",
@@ -99,7 +100,7 @@ class App extends React.Component {
         let chainId = await window.ethereum.request({ method: 'eth_chainId' })
         await this.setState({networkID: chainId})
         await this.setState({web3Available: true})
-        this.gethETHdata()
+        this.initialETHdata()
       } catch(e) {console.log("No web3")} 
     }
     // Legacy DApp Browsers
@@ -109,32 +110,44 @@ class App extends React.Component {
       await window.web3.request({ method: 'eth_requestAccounts' })
       await this.setState({networkID: chainId})
       await this.setState({web3Available: true})
-      this.gethETHdata()
+      this.initialETHdata()
       }
     // Non-DApp Browsers
     else {
       console.log("No web3")
     }
   }
+  async initialETHdata () {
+    if (this.state.networkID === "0x539" ) {
+      await this.setState({addressHodlerFactory: "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3"})
+      await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
+      await this.setState({weth: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
+    } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
+      await this.setState({addressHodlerFactory: "0x5aCe11c5b46989C09138A7143d0b6d37Ac488046"})
+      await this.setState({asset: "0x47035543eC9A06046FfD02245d407B29A0c0FeF2"})
+      await this.setState({weth: "0x47035543eC9A06046FfD02245d407B29A0c0FeF2"})
+    } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
+      await this.setState({addressHodlerFactory: "0x145375461eA7fFcFBD665C35f99ECE9366e3069A"})
+      await this.setState({asset: "0x16C8aF24E965bEEC49dA02E7A2f527aaa465cA61"})
+      await this.setState({weth: "0x16C8aF24E965bEEC49dA02E7A2f527aaa465cA61"})
+    } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
+      await this.setState({addressHodlerFactory: "0x543F5f09A92d248fB2B31154bd76A5B931dFD701"})
+      await this.setState({asset: "0x779D147E77C86A526267BcEA8D65419542B611F0"})
+      await this.setState({weth: "0x779D147E77C86A526267BcEA8D65419542B611F0"})
+    } else if (this.state.networkID === "0x2a"){
+      await this.setState({addressHodlerFactory: "0x3108C5aEe9a76123210C80CB19bC95324d8600cd"})
+      await this.setState({asset: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
+      await this.setState({weth: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
+    } else {
+      await this.setState({addressHodlerFactory: ""})
+      await this.setState({asset: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
+      await this.setState({weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
+    }
+    this.gethETHdata()
+  }
   async gethETHdata () {
-      console.log(this.state.networkID)
-      if (this.state.networkID === "0x539" ) {
-        addressHodlerFactory = "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3";
-        await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
-      } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
-        addressHodlerFactory = "0x5aCe11c5b46989C09138A7143d0b6d37Ac488046";
-        await this.setState({asset: "0x47035543eC9A06046FfD02245d407B29A0c0FeF2"})
-      } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
-        addressHodlerFactory = "";
-      } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
-        addressHodlerFactory = "";
-      } else if (this.state.networkID === "0x2a"){
-        addressHodlerFactory = "";
-      } else {
-        addressHodlerFactory = "";
-      }
       try {
-        let factory = await new web3.eth.Contract(HodlerFactory.abi, addressHodlerFactory)
+        let factory = await new web3.eth.Contract(HodlerFactory.abi, this.state.addressHodlerFactory)
         let index = await factory.methods.index(this.state.asset).call()
         await this.setState({index: index})
         let hodler_address = await factory.methods.hodler(this.state.asset, this.state.current_index).call()
@@ -370,7 +383,7 @@ class App extends React.Component {
     if (this.state.visible === true) {
       warning = <CardBody >
                   <div className="alert alert-primary">
-                    Hodler is in <b>beta</b>, please use at your own risk
+                    Hodler is in <b>beta</b> and <b>unaudited</b>, please use at your own risk
                     <button type="button" className="close" onClick={() => this.Dismiss()}>
                       <span className="text-dark-blue" aria-hidden="true">&times;</span>
                     </button>
@@ -415,7 +428,7 @@ class App extends React.Component {
     }
 
     let convert_button
-    if (this.state.eth_balance > 0) {
+    if (this.state.weth === this.state.asset) {
       convert_button =  <div>
                         <button 
                           type="button" 

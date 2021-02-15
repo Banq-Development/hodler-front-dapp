@@ -106,7 +106,10 @@ class AppNavbar extends React.Component {
           expand="md"
         >
           <img src={logo} alt="logo" height={45} width={60}/>
-          <NavLink className="text-light text-left" >
+          <NavLink 
+            className="text-light text-left" 
+            href="https://hodler.financial"
+          >
             <span>Hodler</span>
           </NavLink>
           <Container className="px-4"></Container>
