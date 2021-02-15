@@ -91,7 +91,7 @@ class AppNavbar extends React.Component {
                 </div>
       } else if (this.props.chainID !== "0x01" 
                   && this.props.chainID !== "0x1"
-                  && this.props.chainID != "1"
+                  && this.props.chainID !== "1"
                   && this.props.chainID !== 1
                 ) {
         alert = <div className="alert alert-danger text-center">
