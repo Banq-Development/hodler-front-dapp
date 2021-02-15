@@ -73,19 +73,19 @@ class AppNavbar extends React.Component {
         alert = <div className="alert alert-warning text-center">
                   <b>GANACHE</b> private test network
                 </div>
-      } else if (this.props.chainID === "0x03" || this.props.chainID === "0x3"){
+      } else if (this.props.chainID === "0x03" || this.props.chainID === "0x3" || this.props.chainID === 3){
         alert = <div className="alert alert-warning text-center">
                   <b>Ropsten</b> network
                 </div>
-      } else if (this.props.chainID === "0x04" || this.props.chainID === "0x4"){
+      } else if (this.props.chainID === "0x04" || this.props.chainID === "0x4" || this.props.chainID === 4){
         alert = <div className="alert alert-warning text-center">
                   <b>Rinkeby</b> network
                 </div>
-      } else if (this.props.chainID === "0x05" || this.props.chainID === "0x5"){
+      } else if (this.props.chainID === "0x05" || this.props.chainID === "0x5" || this.props.chainID === 5){
         alert = <div className="alert alert-warning text-center">
                   <b>Goerli</b> network
                 </div>
-      } else if (this.props.chainID === "0x2a"){
+      } else if (this.props.chainID === "0x2a" || this.props.chainID === 42){
         alert = <div className="alert alert-warning text-center">
                   <b>Kovan</b> network
                 </div>

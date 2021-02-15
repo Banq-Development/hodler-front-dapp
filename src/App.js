@@ -81,60 +81,73 @@ class App extends React.Component {
   }
   componentDidMount() {
     this.startEth();
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", () => {
-        this.startEth();
-      })
-      window.ethereum.on("chainChanged", () => {
-        this.startEth();
-      })
-    }
+    try {
+      if (window.ethereum) {
+        window.ethereum.on("accountsChanged", () => {
+          this.startEth();
+        })
+        window.ethereum.on("chainChanged", () => {
+          this.startEth();
+        })
+      }
+    } catch (e) {console.log("no window.ethereum")}
   }
   async startEth () {
-    if (window.ethereum) {
-      window.ethereum.autoRefreshOnNetworkChange = false
-      web3 = new Web3(window.ethereum);
-      try {
-        let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-        this.setState({ account: accounts[0] })
-        let chainId = await window.ethereum.request({ method: 'eth_chainId' })
+      if (window.ethereum) {
+        window.ethereum.autoRefreshOnNetworkChange = false
+        web3 = new Web3(window.ethereum);
+        try {
+          let accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
+          this.setState({ account: accounts[0] })
+          let chainId = await window.ethereum.request({ method: 'eth_chainId' })
+          await this.setState({networkID: chainId})
+          await this.setState({web3Available: true})
+          this.initialETHdata()
+        } catch(e) {
+          try {
+            let accounts = await web3.eth.getAccounts()
+            this.setState({ account: accounts[0] })
+            let chainId = await web3.eth.getChainId()
+            await this.setState({networkID: chainId})
+            await this.setState({web3Available: true})
+            this.initialETHdata()
+          } catch (e) {
+            console.log("No web3 injected")
+          } 
+        } 
+      }
+      // Legacy DApp Browsers
+      else if (window.web3) {
+        web3 = new Web3(window.web3.currentProvider);
+        let chainId = await window.web3.request({ method: 'eth_chainId' })
+        await window.web3.request({ method: 'eth_requestAccounts' })
         await this.setState({networkID: chainId})
         await this.setState({web3Available: true})
         this.initialETHdata()
-      } catch(e) {console.log("No web3")} 
-    }
-    // Legacy DApp Browsers
-    else if (window.web3) {
-      web3 = new Web3(window.web3.currentProvider);
-      let chainId = await window.web3.request({ method: 'eth_chainId' })
-      await window.web3.request({ method: 'eth_requestAccounts' })
-      await this.setState({networkID: chainId})
-      await this.setState({web3Available: true})
-      this.initialETHdata()
+        }
+      // Non-DApp Browsers
+      else {
+        console.log("No web3")
       }
-    // Non-DApp Browsers
-    else {
-      console.log("No web3")
-    }
   }
   async initialETHdata () {
     if (this.state.networkID === "0x539" ) {
       await this.setState({addressHodlerFactory: "0x6Cb749e08832edEDf77cFB34fF362e011cB1cDa3"})
       await this.setState({asset: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
       await this.setState({weth: "0xA6731e8A3174daBc92FbDAe2cD7c7148051eab64"})
-    } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3"){
+    } else if (this.state.networkID === "0x03" || this.state.networkID === "0x3" || this.state.networkID === 3){
       await this.setState({addressHodlerFactory: "0x5aCe11c5b46989C09138A7143d0b6d37Ac488046"})
       await this.setState({asset: "0x47035543eC9A06046FfD02245d407B29A0c0FeF2"})
       await this.setState({weth: "0x47035543eC9A06046FfD02245d407B29A0c0FeF2"})
-    } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4"){
+    } else if (this.state.networkID === "0x04" || this.state.networkID === "0x4" || this.state.networkID === 4){
       await this.setState({addressHodlerFactory: "0x145375461eA7fFcFBD665C35f99ECE9366e3069A"})
       await this.setState({asset: "0x16C8aF24E965bEEC49dA02E7A2f527aaa465cA61"})
       await this.setState({weth: "0x16C8aF24E965bEEC49dA02E7A2f527aaa465cA61"})
-    } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5"){
+    } else if (this.state.networkID === "0x05" || this.state.networkID === "0x5" || this.state.networkID === 5){
       await this.setState({addressHodlerFactory: "0x543F5f09A92d248fB2B31154bd76A5B931dFD701"})
       await this.setState({asset: "0x779D147E77C86A526267BcEA8D65419542B611F0"})
       await this.setState({weth: "0x779D147E77C86A526267BcEA8D65419542B611F0"})
-    } else if (this.state.networkID === "0x2a"){
+    } else if (this.state.networkID === "0x2a" || this.state.networkID === 42){
       await this.setState({addressHodlerFactory: "0x3108C5aEe9a76123210C80CB19bC95324d8600cd"})
       await this.setState({asset: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
       await this.setState({weth: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
@@ -185,7 +198,6 @@ class App extends React.Component {
         await this.setState({eth_balance: balance})  
         let totalWithdrawn = await hodler.methods.totalWithdraw().call() 
         await this.setState({totalWithdrawn: totalWithdrawn}) 
-        
         let currentTimestamp = await web3.eth.getBlock("latest")
         await this.setState({currentTimestamp: currentTimestamp.timestamp}) 
         let startTimestamp = await hodler.methods.start_time().call()
