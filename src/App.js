@@ -152,7 +152,7 @@ class App extends React.Component {
       await this.setState({asset: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
       await this.setState({weth: "0xC20d30Cee8a6C03c110F4B8837560EC35034b3b0"})
     } else {
-      await this.setState({addressHodlerFactory: ""})
+      await this.setState({addressHodlerFactory: "0x372321bFA342664d78789ce0dc16F69E2377802c"})
       await this.setState({asset: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
       await this.setState({weth: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"})
     }
